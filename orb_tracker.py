@@ -1,19 +1,36 @@
 import cv2
 import numpy as np
+import argparse
 from matplotlib import pyplot as plt
 
 NUM_OF_TRACKED_FEATURES = 50
 NUM_OF_BEST_MATCHES = 10
 FRAME_COLOR = (0, 255, 0)
 
-def extract_features_from_picture(image):
-    """[summary]
+def parse_arguments():
+    parser = argparse.ArgumentParser(add_help=True,
+                                     description='OpenCV ORB Tracker')
+    parser.add_argument('-v', '--input_video',
+                        default='sawmovie.mp4',     
+                        help='Input video',
+                        type=str)
+  
+    parser.add_argument('-p','--input_photo',
+                        default='saw1.jpg', 
+                        help='Photo with object that is going to be tracked',
+                        type=str)
+    
+    return parser.parse_args()
 
+def extract_features_from_picture(image):
+    """ method that inputs an image and extracts its features
+        using ORB Tracker
     Args:
-        image ([type]): [description]
+        image (array of points describing an image): image representing an object
+        which features are going to be to extracted
 
     Returns:
-        [type]: [description]
+        image, keypoints, des: input image, keypoints from image, image descriptors
     """
     # creating orb tracker
     orb = cv2.ORB_create(nfeatures=NUM_OF_TRACKED_FEATURES)
@@ -25,11 +42,12 @@ def extract_features_from_picture(image):
     return image, keypoints, des
 
 def track_object_in_video(video_path, image_path):
-    """[summary]
+    """ method that plays video from path and tracks the object
+        on video using input image as reference
 
     Args:
-        video_path ([type]): [description]
-        image_path ([type]): [description]
+        video_path (str): path to input video
+        image_path (str): path to input image
     """
     # creating window
     cv2.namedWindow('Video Playback',cv2.WINDOW_NORMAL)
@@ -92,4 +110,8 @@ def track_object_in_video(video_path, image_path):
 
     cap.release()
 
-track_object_in_video('sawmovie.mp4', 'saw1.jpg')
+def main(args):
+    track_object_in_video(args.input_video, args.input_photo)
+
+if __name__ == "__main__":
+    main(parse_arguments())
